@@ -76,11 +76,25 @@ resource "local_file" "04-networkpolicy" {
   filename = "../namespaces/${local.cluster}/${var.namespace}/04-networkpolicy.yaml"
 }
 
+data "template_file" "05-deployuser" {
+  template = "${file("${path.module}/05-deploy-serviceaccount.yaml")}"
+
+  vars {
+    namespace = "${var.namespace}"
+  }
+}
+
+resource "local_file" "05-deployuser" {
+  content  = "${data.template_file.05-deployuser.rendered}"
+  filename = "../namespaces/${local.cluster}/${var.namespace}/05-deploy-serviceaccount.yaml"
+}
+
 resource "local_file" "resources-main-tf" {
   content  = "${file("${path.module}/resources-main-tf")}"
   filename = "../namespaces/${local.cluster}/${var.namespace}/resources/main.tf"
 }
 
+# Application deploy
 data "template_file" "deployment" {
   template = "${file("./kubectl_deploy/deployment.yaml")}"
 
