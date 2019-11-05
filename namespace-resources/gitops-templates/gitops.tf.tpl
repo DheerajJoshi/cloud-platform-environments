@@ -2,7 +2,7 @@ module "concourse-gitops" {
   source                        = "github.com/ministryofjustice/cloud-platform-terraform-gitops"
   github_team                   = "${github_team}"
   namespace                     = "${namespace}"
-  concourse_basic_auth_username = "TF_VAR_CONCOURSE_USER"
-  concourse_url                 = "TF_VAR_CONCOURSE_URL"
-  concourse_basic_auth_password = "TF_VAR_CONCOUSE_PASSWORD"
+  concourse_basic_auth_username = "${var.concourse_basic_auth_username}"
+  concourse_url                 = "${var.concourse_url}"
+  concourse_basic_auth_password = "${var.concourse_basic_auth_password}"
 }

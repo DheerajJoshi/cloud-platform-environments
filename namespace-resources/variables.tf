@@ -1,6 +1,6 @@
 variable "namespace" {
   description = "What is the name of your namespace? This should be of the form: <application>-<environment>. e.g. myapp-dev (lower-case letters and dashes only)"
-  default     = "helloworld-dev"
+  default     = "helloworld-staging"
 }
 
 variable "github_team" {
