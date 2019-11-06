@@ -43,10 +43,7 @@ variable "source_code_url" {
   default     = "https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app"
 }
 
-# Variables for the gitops concourse pipeline
-
-
-#variable "concourse_url" {}
-#variable "concourse_basic_auth_username" {}
-#variable "concourse_basic_auth_password" {}
-
+variable "gitops_opt_out" {
+  description = "Would you like to have a pipeline created for you?
+  default     = "yes"
+}
