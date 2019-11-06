@@ -1,5 +1,5 @@
 locals {
-  cluster    = "live-1.cloud-platform.service.justice.gov.uk"
+  cluster    = "concourse-op.cloud-platform.service.justice.gov.uk"
   repository = "/repo/${element(split("/", var.source_code_url),4)}"
 }
 
@@ -148,6 +148,12 @@ data "template_file" "gitops" {
 resource "local_file" "gitops" {
   content  = "${data.template_file.gitops.rendered}"
   filename = "../namespaces/${local.cluster}/${var.namespace}/resources/gitops.tf"
+
+}
+
+resource "local_file" "resources-variables-tf" {
+  content  = "${file("${path.module}/gitops-template/variables.tf")}"
+  filename = "../namespaces/${local.cluster}/${var.namespace}/resources/variables.tf"
 }
 
 # Change permission on the directory
