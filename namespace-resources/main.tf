@@ -94,7 +94,7 @@ resource "local_file" "resources-main-tf" {
   filename = "../namespaces/${local.cluster}/${var.namespace}/resources/main.tf"
 }
 
-# Application deploy
+# Helloworld application deploy
 data "template_file" "deployment" {
   template = "${file("./kubectl_deploy/deployment.yaml")}"
 
@@ -140,19 +140,19 @@ data "template_file" "gitops" {
   template = "${file("./gitops-templates/gitops.tf.tpl")}"
 
   vars {
-    github_team = "${var.github_team}"
-    namespace   = "${var.namespace}"
+    github_team                   = "${var.github_team}"
+    namespace                     = "${var.namespace}"
+    source_code_url               = "${var.source_code_url}"
   }
 }
 
 resource "local_file" "gitops" {
   content  = "${data.template_file.gitops.rendered}"
   filename = "../namespaces/${local.cluster}/${var.namespace}/resources/gitops.tf"
-
 }
 
 resource "local_file" "resources-variables-tf" {
-  content  = "${file("${path.module}/gitops-template/variables.tf")}"
+  content  = "${file("${path.module}/gitops-templates/variables.tf")}"
   filename = "../namespaces/${local.cluster}/${var.namespace}/resources/variables.tf"
 }
 

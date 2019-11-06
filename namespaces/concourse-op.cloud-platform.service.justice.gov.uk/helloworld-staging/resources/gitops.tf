@@ -1,4 +1,5 @@
 module "concourse-gitops" {
+  source                        = "github.com/ministryofjustice/cloud-platform-terraform-gitops"
   source_code_url               = "https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app"
   github_team                   = "webops"
   namespace                     = "helloworld-staging"
