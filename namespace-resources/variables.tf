@@ -42,4 +42,3 @@ variable "source_code_url" {
   description = "What is the Github repository URL of the source code for this application?"
   default     = "https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app"
 }
-

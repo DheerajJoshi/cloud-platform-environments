@@ -15,7 +15,7 @@ data "template_file" "namespace" {
     owner           = "${var.owner}"
     contact_email   = "${var.contact_email}"
     source_code_url = "${var.source_code_url}"
-    github_team     = "${github_team}"
+    github_team     = "${var.github_team}"
   }
 }
 
@@ -81,8 +81,8 @@ data "template_file" "05-deployuser" {
   template = "${file("${path.module}/05-deploy-serviceaccount.yaml")}"
 
   vars {
-    namespace = "${var.namespace}"
-    github_team     = "${github_team}"
+    namespace   = "${var.namespace}"
+    github_team = "${var.github_team}"
   }
 }
 
