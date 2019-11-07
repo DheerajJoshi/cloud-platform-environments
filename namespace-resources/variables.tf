@@ -43,7 +43,3 @@ variable "source_code_url" {
   default     = "https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app"
 }
 
-variable "gitops_opt_out" {
-  description = "Would you like to have a pipeline created for you?
-  default     = "yes"
-}

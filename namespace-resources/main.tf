@@ -1,5 +1,5 @@
 locals {
-  cluster    = "concourse-op.cloud-platform.service.justice.gov.uk"
+  cluster    = "gitops-test.cloud-platform.service.justice.gov.uk"
   repository = "/repo/${element(split("/", var.source_code_url),4)}"
 }
 
@@ -140,9 +140,9 @@ data "template_file" "gitops" {
   template = "${file("./gitops-templates/gitops.tf.tpl")}"
 
   vars {
-    github_team                   = "${var.github_team}"
-    namespace                     = "${var.namespace}"
-    source_code_url               = "${var.source_code_url}"
+    github_team     = "${var.github_team}"
+    namespace       = "${var.namespace}"
+    source_code_url = "${var.source_code_url}"
   }
 }
 
