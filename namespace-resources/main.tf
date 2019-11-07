@@ -15,6 +15,7 @@ data "template_file" "namespace" {
     owner           = "${var.owner}"
     contact_email   = "${var.contact_email}"
     source_code_url = "${var.source_code_url}"
+    github_team     = "${github_team}"
   }
 }
 
@@ -81,6 +82,7 @@ data "template_file" "05-deployuser" {
 
   vars {
     namespace = "${var.namespace}"
+    github_team     = "${github_team}"
   }
 }
 
