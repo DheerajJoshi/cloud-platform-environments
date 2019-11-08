@@ -56,7 +56,7 @@ EOF
 
 resource "kubernetes_secret" "concourse_s3_bucket" {
   metadata {
-    name      = "cccd-s3-bucket"
+    name      = "concourse-s3-bucket"
     namespace = "${var.namespace}"
   }
 
