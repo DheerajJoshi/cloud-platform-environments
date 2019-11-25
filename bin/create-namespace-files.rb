@@ -12,7 +12,7 @@ require "fileutils"
 
 TEMPLATES_DIR = "namespace-resources"
 DEPLOY_TEMPLATES_DIR = "namespace-resources/kubectl_deploy"
-CLUSTER_NAME = "live-1.cloud-platform.service.justice.gov.uk"
+CLUSTER_NAME = "gitops-test.cloud-platform.service.justice.gov.uk"
 NAMESPACES_DIR = "namespaces/#{CLUSTER_NAME}"
 WORKING_COPY = "/appsrc" # This is where we mount the user's working copy of their application
 DEPLOYMENT_DIR = "cloud-platform-deploy" # will be created in user's app. working copy
@@ -48,7 +48,9 @@ def create_namespace_files(answers)
   namespace = answers.fetch("namespace")
   dir = File.join(NAMESPACES_DIR, namespace)
   FileUtils.mkdir_p(dir)
+  FileUtils.mkdir_p("#{dir}/gitops-resources")
   render_templates(Dir["#{TEMPLATES_DIR}/*.yaml"], dir, answers)
+  render_templates(Dir["#{TEMPLATES_DIR}/gitops-resources/*.yaml"], "#{dir}/gitops-resources", answers)
   create_terraform_files(namespace, answers)
   create_cloud_platform_deploy(answers)
 
