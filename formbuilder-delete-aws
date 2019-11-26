@@ -1,0 +1,29 @@
+
+# NB: Switch kubectl context before using this file
+
+export cluster=$PIPELINE_CLUSTER
+
+export AWS_PROFILE=moj-pi
+export PIPELINE_CLUSTER=cloud-platform-live-0.k8s.integration.dsd.io
+export PIPELINE_STATE_BUCKET=moj-cp-k8s-investigation-environments-terraform
+export PIPELINE_STATE_KEY_PREFIX=""
+export PIPELINE_STATE_REGION="eu-west-1"
+export PIPELINE_CLUSTER_STATE_BUCKET=moj-cp-k8s-investigation-platform-terraform
+export PIPELINE_CLUSTER_STATE_KEY_PREFIX="env:/"
+export PIPELINE_TERRAFORM_STATE_LOCK_TABLE=cloud-platform-environments-terraform-lock
+export cluster=cloud-platform-live-0.k8s.integration.dsd.io
+
+export namespace=formbuilder-publisher-test
+
+cd namespaces/cloud-platform-live-0.k8s.integration.dsd.io/$namespace/resources
+
+terraform init \
+  -backend-config="bucket=${PIPELINE_STATE_BUCKET}" \
+  -backend-config="key=${cluster}/${namespace}/terraform.tfstate" \
+  -backend-config="dynamodb_table=${PIPELINE_TERRAFORM_STATE_LOCK_TABLE}" \
+  -backend-config="region=${PIPELINE_STATE_REGION}"
+
+terraform destroy \
+          -var="cluster_name=${cluster%%.*}" \
+          -var="cluster_state_bucket=${PIPELINE_CLUSTER_STATE_BUCKET}" \
+          -var="cluster_state_key=${PIPELINE_CLUSTER_STATE_KEY_PREFIX}${cluster%%.*}/terraform.tfstate"
