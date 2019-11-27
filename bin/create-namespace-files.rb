@@ -6,9 +6,6 @@
 # TODO: check namespace name is available
 # TODO: remove old terraform stuff from namespace-resources/
 # TODO: mount user's home directory into the tools image, so we can write deployment files to their working copy of their app.
-# TODO: Restructure this code and add tests
-
-require "fileutils"
 
 TEMPLATES_DIR = "namespace-resources"
 DEPLOY_TEMPLATES_DIR = "namespace-resources/kubectl_deploy"
@@ -47,43 +44,17 @@ end
 def create_namespace_files(answers)
   namespace = answers.fetch("namespace")
   dir = File.join(NAMESPACES_DIR, namespace)
-  FileUtils.mkdir_p(dir)
-  FileUtils.mkdir_p("#{dir}/gitops-resources")
-  render_templates(Dir["#{TEMPLATES_DIR}/*.yaml"], dir, answers)
-  render_templates(Dir["#{TEMPLATES_DIR}/gitops-resources/*.yaml"], "#{dir}/gitops-resources", answers)
-  create_terraform_files(namespace, answers)
-  create_cloud_platform_deploy(answers)
-
-  output_message(answers)
+  gitops_dir = File.join(NAMESPACES_DIR, namespace, "gitops-resources")
+  system("mkdir #{dir}")
+  system("mkdir #{gitops_dir}")
+  yaml_templates.each { |template| create_file(template, dir, answers) }
+  gitops_yaml_templates.each { |template| create_file(template, gitops_dir, answers) }
+  copy_terraform_files(namespace)
 end
 
-def create_cloud_platform_deploy(answers)
-  dir = File.join(WORKING_COPY, DEPLOYMENT_DIR, answers.fetch("namespace"))
-  FileUtils.mkdir_p(dir)
-  # TODO: get the helloworld deployment files from the helloworld repo, so that we stay
-  # up to date with any changes.
-  render_templates(Dir["#{DEPLOY_TEMPLATES_DIR}/*.yaml"], dir, answers.merge("hostname" => CLUSTER_NAME))
-end
-
-def render_templates(files, dir, answers)
-  files.each { |template| create_file(template, dir, answers) }
-end
-
-def create_terraform_files(namespace, answers)
-  dir = File.join(NAMESPACES_DIR, namespace, "resources")
-  FileUtils.mkdir_p(dir)
-  create_main_tf(dir)
-  render_templates(Dir["#{TEMPLATES_DIR}/*.tf"], dir, answers)
-end
-
-# The environments checker process expects to find the resources-main-tf
-# file, so we're copying that with a new name, rather than just having
-# a main.tf file in the TEMPLATES_DIR.
-# TODO: Adjust the environments checker so that we can just have main.tf
-def create_main_tf(dir)
-  main_tf = File.read(File.join(TEMPLATES_DIR, "resources-main-tf"))
-  outfile = File.join(dir, "main.tf")
-  File.write(outfile, main_tf)
+def copy_terraform_files(namespace)
+  dir = File.join(NAMESPACES_DIR, namespace)
+  system("cp -r namespace-resources/resources #{dir}")
 end
 
 def create_file(template, dir, answers)
@@ -103,6 +74,14 @@ def replace_var(content, key, value)
   content
     .gsub(str, value)
     .gsub(lower_str, value.downcase)
+end
+
+def yaml_templates
+  Dir["#{TEMPLATES_DIR}/*.yaml"]
+end
+
+def gitops_yaml_templates
+  Dir["#{TEMPLATES_DIR}/gitops-resources/*.yaml"]
 end
 
 def get_answers
@@ -143,19 +122,6 @@ def prompt(question)
   puts
   print "  #{var}: "
   gets.strip
-end
-
-def output_message(answers)
-  puts <<EOF
-
-  The directory #{DEPLOYMENT_DIR} has been added to your
-  application working copy.
-
-  Please commit and push this directory and its contents
-  to enable automated deployment to the cluster
-  #{CLUSTER_NAME}.
-
-EOF
 end
 
 ############################################################
