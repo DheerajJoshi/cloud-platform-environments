@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'fileutils'
+
 # TODO: default
 # TODO: question N of M
 # TODO: validate answers
