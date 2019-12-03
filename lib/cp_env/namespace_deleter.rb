@@ -24,14 +24,14 @@ class CpEnv
 
     def initialize(args)
       @namespace= args.fetch(:namespace)
-      check_prerequisites
+      # check_prerequisites
     end
 
     def delete
-      if safe_to_delete?
+      # if safe_to_delete?
         destroy_aws_resources
-        delete_namespace
-      end
+        # delete_namespace
+      # end
     end
 
     private
@@ -47,11 +47,7 @@ class CpEnv
         KUBE_CONFIG
         KUBE_CTX
         PIPELINE_TERRAFORM_STATE_LOCK_TABLE
-        TFSTATE_AWS_ACCESS_KEY_ID
-        TFSTATE_AWS_REGION
-        TFSTATE_AWS_SECRET_ACCESS_KEY
-        TFSTATE_BUCKET
-        TFSTATE_BUCKET_PREFIX
+        PIPELINE_STATE_BUCKET
       ).each do |var|
         env(var)
       end
@@ -80,10 +76,14 @@ class CpEnv
     end
 
     def destroy_aws_resources
-      execute("rm -rf main.tf .terraform") # clean up any leftover state from prior invocations
-      tf_init
+      create_empty_main_tf
       log("green", "Destroying AWS resources for namespace #{namespace}...")
+      apply_namespace_dir(CLUSTER, namespace_dir)
       # TODO
+    end
+
+    def namespace_dir
+      File.join(NAMESPACES, namespace)
     end
 
     def delete_namespace
@@ -122,26 +122,12 @@ class CpEnv
       @k8s_client
     end
 
-    def tf_init
-      create_empty_main_tf
-
-      # Get AWS credentials from the environment, via bash, so that we don't
-      # accidentally log them in cleartext, if all commands are logged.
-      cmd = <<~EOF
-      terraform init \
-        -backend-config="access_key=${TFSTATE_AWS_ACCESS_KEY_ID}" \
-        -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
-        -backend-config="bucket=#{env('TFSTATE_BUCKET')}" \
-        -backend-config="key=#{env('TFSTATE_BUCKET_PREFIX')}#{CLUSTER}/#{namespace}/terraform.tfstate" \
-        -backend-config="dynamodb_table=${PIPELINE_TERRAFORM_STATE_LOCK_TABLE}" \
-        -backend-config="region=#{env('TFSTATE_AWS_REGION')}"
-      EOF
-      execute cmd
-    end
-
     def create_empty_main_tf
+      dir = File.join(namespace_dir, "resources")
+      execute("mkdir -p #{dir}")
       content = URI::open(EMPTY_MAIN_TF_URL).read
-      File.open('main.tf', 'w') { |f| f.puts(content) }
+      file = File.join(dir, "main.tf")
+      File.open(file, 'w') { |f| f.puts(content) }
     end
 
     def env(var)
