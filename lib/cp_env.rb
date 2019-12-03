@@ -1,6 +1,7 @@
 require "bundler/setup"
 require "kubeclient"
 require "open3"
+require "open-uri"
 require "aws-sdk-s3"
 
 class CpEnv

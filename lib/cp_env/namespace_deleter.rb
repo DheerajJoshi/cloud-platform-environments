@@ -24,6 +24,7 @@ class CpEnv
 
     def initialize(args)
       @namespace= args.fetch(:namespace)
+      check_prerequisites
     end
 
     def delete
@@ -34,6 +35,27 @@ class CpEnv
     end
 
     private
+
+    def check_prerequisites
+      raise "No namespace supplied" if namespace.to_s.empty?
+
+      %w(
+        KUBECONFIG_AWS_ACCESS_KEY_ID
+        KUBECONFIG_AWS_SECRET_ACCESS_KEY
+        KUBECONFIG_S3_BUCKET
+        KUBECONFIG_S3_KEY
+        KUBE_CONFIG
+        KUBE_CTX
+        PIPELINE_TERRAFORM_STATE_LOCK_TABLE
+        TFSTATE_AWS_ACCESS_KEY_ID
+        TFSTATE_AWS_REGION
+        TFSTATE_AWS_SECRET_ACCESS_KEY
+        TFSTATE_BUCKET
+        TFSTATE_BUCKET_PREFIX
+      ).each do |var|
+        env(var)
+      end
+    end
 
     def safe_to_delete?
       dir = File.join(NAMESPACES, namespace)
@@ -58,6 +80,8 @@ class CpEnv
     end
 
     def destroy_aws_resources
+      execute("rm -rf main.tf .terraform") # clean up any leftover state from prior invocations
+      tf_init
       log("green", "Destroying AWS resources for namespace #{namespace}...")
       # TODO
     end
@@ -96,6 +120,28 @@ class CpEnv
       end
 
       @k8s_client
+    end
+
+    def tf_init
+      create_empty_main_tf
+
+      # Get AWS credentials from the environment, via bash, so that we don't
+      # accidentally log them in cleartext, if all commands are logged.
+      cmd = <<~EOF
+      terraform init \
+        -backend-config="access_key=${TFSTATE_AWS_ACCESS_KEY_ID}" \
+        -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
+        -backend-config="bucket=#{env('TFSTATE_BUCKET')}" \
+        -backend-config="key=#{env('TFSTATE_BUCKET_PREFIX')}#{CLUSTER}/#{namespace}/terraform.tfstate" \
+        -backend-config="dynamodb_table=${PIPELINE_TERRAFORM_STATE_LOCK_TABLE}" \
+        -backend-config="region=#{env('TFSTATE_AWS_REGION')}"
+      EOF
+      execute cmd
+    end
+
+    def create_empty_main_tf
+      content = URI::open(EMPTY_MAIN_TF_URL).read
+      File.open('main.tf', 'w') { |f| f.puts(content) }
     end
 
     def env(var)
