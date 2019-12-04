@@ -73,8 +73,11 @@ describe CpEnv::NamespaceDeleter do
   context "when the namespace should be deleted" do
     before do
       allow(Open3).to receive(:capture3).at_least(:once).and_return(["", "", success])
+      allow(Open3).to receive(:capture3).with("mkdir -p namespaces/live-1.cloud-platform.service.justice.gov.uk/nonprod/resources").and_return(["", "", success])
       allow(FileTest).to receive(:directory?).with("namespaces/live-1.cloud-platform.service.justice.gov.uk/#{namespace}").and_return(false, true)
       allow(FileTest).to receive(:directory?).with("namespaces/live-1.cloud-platform.service.justice.gov.uk/#{namespace}/resources").and_return(true)
+      expect(File).to receive(:open).with("/tmp/kubeconfig", "w").at_least(:once)
+      expect(File).to receive(:open).with("namespaces/live-1.cloud-platform.service.justice.gov.uk/nonprod/resources/main.tf", "w").at_least(:once)
     end
 
     it "deletes AWS resources" do
