@@ -17,7 +17,7 @@ class CpEnv
 
     CLUSTER = "live-1.cloud-platform.service.justice.gov.uk"
     KUBECONFIG_AWS_REGION = "eu-west-2"
-    NAMESPACES = "namespaces/#{CLUSTER}"
+    NAMEPACES_DIR = "namespaces/#{CLUSTER}"
     PRODUCTION_LABEL = "cloud-platform.justice.gov.uk/is-production"
     LABEL_TRUE = "true"
     EMPTY_MAIN_TF_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments/master/namespace-resources/resources/main.tf"
@@ -55,8 +55,8 @@ class CpEnv
     end
 
     def safe_to_delete?
-      dir = File.join(NAMESPACES, namespace)
-      if FileTest.directory?(File.join(NAMESPACES, namespace))
+      dir = File.join(NAMEPACES_DIR, namespace)
+      if FileTest.directory?(File.join(NAMEPACES_DIR, namespace))
         log("red", "Namespace folder #{dir} exists. Will not delete.")
         return false
       end
@@ -83,7 +83,7 @@ class CpEnv
     end
 
     def namespace_dir
-      File.join(NAMESPACES, namespace)
+      File.join(NAMEPACES_DIR, namespace)
     end
 
     def delete_namespace
