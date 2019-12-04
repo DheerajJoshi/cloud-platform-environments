@@ -15,8 +15,10 @@ describe CpEnv::NamespaceDeleter do
 
   subject(:deleter) { described_class.new(params) }
 
-  let(:terraform_apply) { "terraform apply --auto-approve" }
+  let(:terraform_apply) { "cd namespaces/live-1.cloud-platform.service.justice.gov.uk/#{namespace}/resources; terraform apply -auto-approve" }
   let(:k8s_client) { double(Kubeclient::Client, get_namespaces: namespaces) }
+
+  let(:success) { double(success?: true) }
 
   before do
     allow(Kubeclient::Client).to receive(:new).and_return(k8s_client)
@@ -69,8 +71,16 @@ describe CpEnv::NamespaceDeleter do
   end
 
   context "when the namespace should be deleted" do
+    before do
+      allow(Open3).to receive(:capture3).at_least(:once).and_return(["", "", success])
+      allow(FileTest).to receive(:directory?).with("namespaces/live-1.cloud-platform.service.justice.gov.uk/#{namespace}").and_return(false, true)
+      allow(FileTest).to receive(:directory?).with("namespaces/live-1.cloud-platform.service.justice.gov.uk/#{namespace}/resources").and_return(true)
+    end
+
     it "deletes AWS resources" do
-      expect_execute(terraform_apply, "", "")
+      allow(k8s_client).to receive(:delete_namespace)
+
+      expect(Open3).to receive(:capture3).with(terraform_apply).at_least(:once)
       deleter.delete
     end
 
