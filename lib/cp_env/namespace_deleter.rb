@@ -28,10 +28,11 @@ class CpEnv
     end
 
     def delete
-      # if safe_to_delete?
+      if safe_to_delete?
         destroy_aws_resources
-        # delete_namespace
-      # end
+        delete_namespace
+        clean_up
+      end
     end
 
     private
@@ -79,7 +80,6 @@ class CpEnv
       create_empty_main_tf
       log("green", "Destroying AWS resources for namespace #{namespace}...")
       apply_namespace_dir(CLUSTER, namespace_dir)
-      # TODO
     end
 
     def namespace_dir
@@ -88,7 +88,7 @@ class CpEnv
 
     def delete_namespace
       log("green", "Deleting namespace #{namespace}...")
-      # TODO
+      execute("kubectl delete namespace #{namespace}")
     end
 
     def kubeclient
@@ -128,6 +128,12 @@ class CpEnv
       content = URI::open(EMPTY_MAIN_TF_URL).read
       file = File.join(dir, "main.tf")
       File.open(file, 'w') { |f| f.puts(content) }
+    end
+
+    # Remove the empty main.tf we created, along
+    # with the containing namespace folder
+    def clean_up
+      execute("rm -rf #{namespace_dir}")
     end
 
     def env(var)
