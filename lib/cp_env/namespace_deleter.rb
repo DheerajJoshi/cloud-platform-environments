@@ -88,7 +88,7 @@ class CpEnv
 
     def delete_namespace
       log("green", "Deleting namespace #{namespace}...")
-      execute("kubectl delete namespace #{namespace}")
+      kubeclient.delete_namespace(namespace)
     end
 
     def kubeclient
