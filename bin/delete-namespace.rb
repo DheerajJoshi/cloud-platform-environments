@@ -2,6 +2,6 @@
 
 require File.join(".", File.dirname(__FILE__), "..", "lib", "cp_env")
 
-require "pry-byebug"
+namespace = ARGV.shift
 
-CpEnv::NamespaceDeleter.new(namespace: "dstest-deva").delete
+CpEnv::NamespaceDeleter.new(namespace: namespace).delete
