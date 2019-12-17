@@ -25,6 +25,7 @@ namespace:
 	@echo
 
 # Create a new gitops namespace
+# TODO: ask for absolute, not relative, directory path
 gitops-namespace:
 	@echo
 	@echo "A deployment directory will be created in your application source code tree, "
