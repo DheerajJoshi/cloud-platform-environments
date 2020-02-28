@@ -36,3 +36,6 @@ Temporary Items
 
 # Ignore IDEs
 .idea/
+
+# Ignore generated k8o deployment files from starter pack script
+starter-pack-resources/deploy
