@@ -38,18 +38,18 @@ def get_options
 end
 
 def helloworld_yaml_templates
-  Dir["#{TEMPLATES_DIR}/cloud-platform-helloworld-rubyapp/*.yaml"]
+  Dir["#{TEMPLATES_DIR}/cloud-platform-helloworld-ruby-app/*.yaml"]
 end
 
 def multicontainer_yaml_templates
-  Dir["#{TEMPLATES_DIR}/cloud-platform-multi-container-app/*.yaml"]
+  Dir["#{TEMPLATES_DIR}/cloud-platform-multi-container-demo-app/*.yaml"]
 end
 
 def create_deploy_helloworld_rubyapp(deploy_dir)
 
-  log("green", "Creating cloud-platform-helloworld-app k8o files for {#get_options[:namespace]}")
+  log("green", "Creating cloud-platform-helloworld-ruby-app k8o files for {#get_options[:namespace]}")
 
-  dir = File.join(deploy_dir, "cloud-platform-helloworld-app")
+  dir = File.join(deploy_dir, "cloud-platform-helloworld-ruby-app")
   system("mkdir #{dir}")
 
   helloworld_yaml_templates.each { |template| 
@@ -68,11 +68,11 @@ def create_deploy_helloworld_rubyapp(deploy_dir)
 end
 
 
-def create_deploy_multi_container_app(deploy_dir)
+def create_deploy_multi_container_demo_app(deploy_dir)
 
-  log("green", "Creating cloud-platform-multi-container-app k8o files for {#get_options[:namespace]}")
+  log("green", "Creating cloud-platform-multi-container-demo-app k8o files for {#get_options[:namespace]}")
 
-  dir = File.join(deploy_dir, "cloud-platform-multi-container-app")
+  dir = File.join(deploy_dir, "cloud-platform-multi-container-demo-app")
   system("mkdir #{dir}")
 
   multicontainer_yaml_templates.each { |template| 
@@ -96,7 +96,7 @@ def main
   system("mkdir #{deploy_dir}")
 
   create_deploy_helloworld_rubyapp deploy_dir
-  # create_deploy_multi_container_app deploy_dir
+  # create_deploy_multi_container_demo_app deploy_dir
 end
 
 main
