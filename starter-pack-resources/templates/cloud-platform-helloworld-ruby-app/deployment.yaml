@@ -15,4 +15,4 @@ spec:
         image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
         imagePullPolicy: Always
         ports:
-        - containerPort: 4567
+        - containerPort: 4568

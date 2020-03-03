@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: multi-container-demo
+  namespace: <%= @namespace %>
+spec:
+  tls:
+  - hosts:
+    - mcda-<%= @namespace %>.apps.<%= @cluster_name %>.cloud-platform.service.justice.gov.uk
+  rules:
+  - host: mcda-<%= @namespace %>.apps.<%= @cluster_name %>.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rails-app-service
+          servicePort: 3000

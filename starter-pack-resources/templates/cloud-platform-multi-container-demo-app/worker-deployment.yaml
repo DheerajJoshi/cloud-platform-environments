@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: <%= @namespace %>
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: ministryofjustice/cloud-platform-multi-container-demo-app:worker-1.3
+        ports:
+        - containerPort: 4567
+        env:
+          - name: DATABASE_URL
+            value: postgres://dummy:dummy@multi-container-demo-postgres.<%= @namespace %>.svc.cluster.local:5432/multi_container_demo_app

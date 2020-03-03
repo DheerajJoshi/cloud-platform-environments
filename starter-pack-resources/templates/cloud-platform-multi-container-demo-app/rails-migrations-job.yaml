@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rails-migrations
+  namespace: <%= @namespace %>
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+      - name: rails-app
+        image: ministryofjustice/cloud-platform-multi-container-demo-app:rails-app-1.3
+        command: [ "bundle", "exec", "rails", "db:migrate" ]
+        env:
+          - name: DATABASE_URL
+            value: postgres://dummy:dummy@multi-container-demo-postgres.<%= @namespace %>.svc.cluster.local:5432/multi_container_demo_app
+      restartPolicy: OnFailure

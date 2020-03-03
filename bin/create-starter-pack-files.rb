@@ -7,8 +7,8 @@ require "yaml"
 
 require File.join(".", File.dirname(__FILE__), "..", "lib", "cp_env")
 
-TEMPLATES_DIR = "../starter-pack-resources/templates"
-RESOURCES_DIR = "../starter-pack-resources"
+TEMPLATES_DIR = "starter-pack-resources/templates"
+RESOURCES_DIR = "starter-pack-resources"
 
 class StarterPackErb
   include ERB::Util
@@ -33,7 +33,7 @@ class StarterPackErb
 end
 
 def get_options
-  options = {namespace: "poornima-dev", cluster_name: "live-1", cluster: "live-1.cloud-platform.service.justice.gov.uk" }
+  options = parse_options
   options
 end
 
@@ -77,7 +77,7 @@ def create_deploy_multi_container_demo_app(deploy_dir)
 
   multicontainer_yaml_templates.each { |template| 
     list = StarterPackErb.new(get_options, File.read(template))
-    list.save(File.join(DEPLOY_DIR, File.basename(template)))
+    list.save(File.join(dir, File.basename(template)))
   }
 
   log("green", "applying for cluster #{get_options[:cluster]}")
@@ -90,13 +90,42 @@ def create_deploy_multi_container_demo_app(deploy_dir)
 
 end
 
+
+
+def parse_options
+
+  options = {namespace: "starter-pack", cluster_name: "pk-conc-1", cluster: "pk-conc-1.cloud-platform.service.justice.gov.uk" }
+
+  OptionParser.new { |opts|
+    opts.on("-n", "--namespace NAMESPACE-NAME", "Namespace name") do |name|
+      options[:namespace] = "starter-pack"
+    end
+
+    opts.on("-c", "--cluster-name CLUSTER-NAME", "Cluster name where the app needs to be deployed") do |name|
+      options[:cluster_name] = name
+    end
+
+    opts.on("-c", "--cluster CLUSTER", "Cluster domain where the app needs to be deployed") do |name|
+      options[:cluster] = name
+    end
+
+    opts.on_tail("-h", "--help", "Show help message") do
+      puts opts
+      exit
+    end
+  }.parse!
+
+  options
+end
+
 def main
 
   deploy_dir = File.join(RESOURCES_DIR, "deploy")
   system("mkdir #{deploy_dir}")
 
   create_deploy_helloworld_rubyapp deploy_dir
-  # create_deploy_multi_container_demo_app deploy_dir
+  create_deploy_multi_container_demo_app deploy_dir
 end
 
 main
+
