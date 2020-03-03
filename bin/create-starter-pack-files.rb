@@ -7,8 +7,8 @@ require "yaml"
 
 require File.join(".", File.dirname(__FILE__), "..", "lib", "cp_env")
 
-TEMPLATES_DIR = "starter-pack-resources/templates"
-RESOURCES_DIR = "starter-pack-resources"
+TEMPLATES_DIR = "../starter-pack-resources/templates"
+RESOURCES_DIR = "../starter-pack-resources"
 
 class StarterPackErb
   include ERB::Util
@@ -47,7 +47,7 @@ end
 
 def create_deploy_helloworld_rubyapp(deploy_dir)
 
-  log("green", "Creating cloud-platform-helloworld-ruby-app k8o files for {#get_options[:namespace]}")
+  log("green", "Creating cloud-platform-helloworld-ruby-app k8o files for #{get_options[:namespace]}")
 
   dir = File.join(deploy_dir, "cloud-platform-helloworld-ruby-app")
   system("mkdir #{dir}")
@@ -61,7 +61,7 @@ def create_deploy_helloworld_rubyapp(deploy_dir)
 
   set_kube_context(get_options[:cluster])
 
-  Open3.capture3("kubectl -n #{get_options[:namespace]} apply -f #{dir}")
+  execute("kubectl -n #{get_options[:namespace]} apply -f #{dir}")
 
   log("green", "Done.")
 
@@ -70,7 +70,7 @@ end
 
 def create_deploy_multi_container_demo_app(deploy_dir)
 
-  log("green", "Creating cloud-platform-multi-container-demo-app k8o files for {#get_options[:namespace]}")
+  log("green", "Creating cloud-platform-multi-container-demo-app k8o files for #{get_options[:namespace]}")
 
   dir = File.join(deploy_dir, "cloud-platform-multi-container-demo-app")
   system("mkdir #{dir}")
@@ -84,7 +84,7 @@ def create_deploy_multi_container_demo_app(deploy_dir)
 
   set_kube_context(get_options[:cluster])
 
-  Open3.capture3("kubectl -n #{get_options[:namespace]} apply -f #{dir}")
+  execute("kubectl -n #{get_options[:namespace]} apply -f #{dir}")
 
   log("green", "Done.")
 
