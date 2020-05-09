@@ -33,6 +33,12 @@ resource "helm_release" "team-resources" {
   namespace  = var.namespace
   version    = local.team-resources
 
+
+  set {
+    name  = "limits.default.cpu"
+    value = "250m"
+  }
+
   set {
     name  = "namespace"
     value = "team-resources"
