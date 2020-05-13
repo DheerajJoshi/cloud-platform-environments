@@ -14,12 +14,16 @@ variable "infrastructure-support" {
   default = "cloud-platform"
 }
 
+variable "business-unit" {
+  default = "cloud-platform"
+}
+
 variable "application" {
   default = "module test"
 }
 
 variable "namespace" {
-  default = "ecr-module-test"
+  default = "cloud-platform-module-tests"
 }
 
 variable "repo_name" {

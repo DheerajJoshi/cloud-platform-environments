@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ResourceQuota
 metadata:
   name: namespace-quota
-  namespace: ecr-module-test
+  namespace: s3-module-test
 spec:
   hard:
     pods: "50"
