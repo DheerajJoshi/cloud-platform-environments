@@ -14,6 +14,10 @@ variable "infrastructure-support" {
   default = "cloud-platform"
 }
 
+variable "business-unit" {
+  default = "cloud-platform"
+}
+
 variable "application" {
   default = "module test"
 }
