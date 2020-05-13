@@ -1,3 +1,6 @@
+########################################
+# C100 Application RDS (postgres engine)
+########################################
 
 module "rds-instance" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=5.3"

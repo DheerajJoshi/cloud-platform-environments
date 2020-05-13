@@ -45,6 +45,10 @@ def mogaal_namespace_dirs(cluster)
   Dir["namespaces/#{cluster}/cloud-platform-module-tests"].sort
 end
 
+def mogaal_ecr_dirs(cluster)
+  Dir["namespaces/#{cluster}/ecr-module-test"].sort
+end
+
 def set_kube_context(cluster)
   execute("kubectl config use-context #{cluster}")
 end
