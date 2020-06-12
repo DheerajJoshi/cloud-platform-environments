@@ -1,7 +1,7 @@
 
 
 module "poornima_test_postgres_rds" {
-  source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance"
+  source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=read-replica"
   cluster_name         = var.cluster_name
   cluster_state_bucket = var.cluster_state_bucket
   team_name            = "Cloud Platform"
@@ -61,7 +61,7 @@ resource "kubernetes_secret" "poornima_test_pg_rds" {
 }
 
 module "poornima_test_postgres_rds_read_replica" {
-  source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance"
+  source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=read-replica"
   cluster_name         = var.cluster_name
   cluster_state_bucket = var.cluster_state_bucket
   team_name            = "Cloud Platform"
@@ -85,7 +85,7 @@ module "poornima_test_postgres_rds_read_replica" {
   # Pick the one that defines the postgres version the best
   rds_family = "postgres10"
 
-  # replicate_source_db = module.poornima_test_postgres_rds.db_identifier
+  replicate_source_db = module.poornima_test_postgres_rds.db_identifier
   # use "allow_major_version_upgrade" when upgrading the major version of an engine
   allow_major_version_upgrade = "true"
 
