@@ -31,8 +31,6 @@ module "poornima_test_postgres_rds" {
   # use "allow_major_version_upgrade" when upgrading the major version of an engine
   allow_major_version_upgrade = "true"
 
-  apply_method = "pending-reboot"
-
   providers = {
     # Can be either "aws.london" or "aws.ireland"
     aws = aws.london
@@ -62,7 +60,6 @@ resource "kubernetes_secret" "poornima_test_pg_rds" {
      */
 }
 
-
 module "poornima_test_postgres_rds_read_replica" {
   source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=read-replica"
   cluster_name         = var.cluster_name
@@ -75,12 +72,6 @@ module "poornima_test_postgres_rds_read_replica" {
   # If the rds_name is not specified a random name will be generated ( cp-* )
   # Changing the RDS name requires the RDS to be re-created (destroy + create)
 
-
-  # enable performance insights
-  performance_insights_enabled = true
-
-  # change the postgres version as you see fit.
-  db_engine_version      = "10"
   environment-name       = "development"
   infrastructure-support = "platforms@digital.justice.gov.uk"
 
@@ -88,20 +79,18 @@ module "poornima_test_postgres_rds_read_replica" {
   # Pick the one that defines the postgres version the best
   rds_family = "postgres10"
 
-  # Some engines can't apply some parameters without a reboot(ex postgres9.x cant apply force_ssl immediate). 
-  # You will need to specify "pending-reboot" here, as default is set to "immediate".
+  db_name = module.poornima_test_postgres_rds.database_name
 
-  # use "allow_major_version_upgrade" when upgrading the major version of an engine
-  allow_major_version_upgrade = "true"
-  replicate_source_db = module.poornima_test_postgres_rds.db_identifier
-  same_region = true
-  apply_method = "pending-reboot"
+  replicate_source_db         = module.poornima_test_postgres_rds.db_identifier
+  skip_final_snapshot         = "true"
+  db_backup_retention_period  = 0
 
   providers = {
     # Can be either "aws.london" or "aws.ireland"
     aws = aws.london
   }
 }
+
 
 resource "kubernetes_secret" "poornima_test_pg_rds_read_replica" {
   metadata {
