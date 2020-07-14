@@ -1,4 +1,4 @@
-TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.18
+TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.19
 
 namespace-report.json: bin/namespace-reporter.rb namespaces/live-1.cloud-platform.service.justice.gov.uk/*/*.yaml
 	./bin/namespace-reporter.rb -o json -n '.*' > namespace-report.json
@@ -27,7 +27,8 @@ namespace-message:
 namespace:
 	@make pull-tools
 	@echo "Creating namespace..."
-	@docker run --rm -it -v $$(pwd):/app -w /app $(TOOLS_IMAGE) bin/create-namespace-files.rb $${ANSWERS_FILE}
+	@docker run --rm -it -v $$(pwd):/cloud-platform-environments -w /cloud-platform-environments $(TOOLS_IMAGE) \
+	sh -c '/usr/local/bin/cloud-platform environment create'
 	@make namespace-message
 
 # Create a new namespace with 'gitops' continuous deployment
